@@ -5,6 +5,13 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true // Automatically gets converted to SERIAL for postgres
         },
+
+        title: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+
+
         description: {
             type: DataTypes.STRING,
             allowNull: false
