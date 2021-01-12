@@ -7,6 +7,7 @@ const Task = require("../models/Task");
 //CRUD task
 //get all tasks
 router.get("/all", (req, res) => {
+
     db.Task.findAll().then(tasks => res.send(tasks));
 });
 //get task by id
@@ -23,7 +24,7 @@ router.post("/newTask", (req, res) => {
 
     db.Task.findOne({
         where: {
-            description: req.body.description
+            title: req.body.title
         }
     })
         
@@ -34,7 +35,7 @@ router.post("/newTask", (req, res) => {
                     title: req.body.title,
                 })
                     .then(task => {
-                        res.json({ status: task.description + 'added successfully!' })
+                        res.json({ status: task.title + 'added successfully!' })
                     })
                     .catch(err => {
                         res.send('error: ' + err)
@@ -62,6 +63,21 @@ router.put("/update/:id", (req, res) => {
     db.Task.update({
         description: req.body.description,
         
+    },
+        {
+            where: {
+                id: req.params.id
+
+            }
+
+        }
+
+    ).then(() => res.send("updated successfuly"));
+});
+router.put("/isDone/:id", (req, res) => {
+    db.Task.update({
+        isDone: true,
+
     },
         {
             where: {

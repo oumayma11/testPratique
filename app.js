@@ -1,7 +1,10 @@
 const express = require('express')
 const app = express()
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const db = require("./models");
+var cors = require('cors')
+
+app.use(cors())
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
