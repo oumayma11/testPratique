@@ -10,6 +10,7 @@ class task extends Component {
         super(props);
         this.state = {
             items: [],
+            tags:[],
             isChecked: false }
             this.handleChecked = this.handleChecked.bind(this);
        
@@ -32,8 +33,19 @@ class task extends Component {
     }
 
 
+    allTags() {
+
+        fetch('http://localhost:3001/tag/allTag/' )
+            .then(response => response.json()).then(tags => this.setState({ tags })).then(response => {
+                console.log(JSON.parse(response))
 
 
+
+
+            }).catch(() => console.log("Can’t access " + 'http://localhost:3001/tag/findTg' + " response. Blocked by browser?"))
+
+
+    }
    
 
     componentDidMount() {
@@ -42,33 +54,44 @@ class task extends Component {
                 .then(items => this.setState({ items })).then(response => {
                     console.log(JSON.parse(response))
 
-                }).catch(() => console.log("Can’t access " + 'http://localhost:3001/task/all' + " response. Blocked by browser?"))
+                }).catch(() => console.log("Can’t access  response. Blocked by browser?"))
+                fetch('http://localhost:3001/tag/alltag')
+                        .then(response => response.json())
+                        .then(tags => this.setState({ tags })).then(response => {
+                            console.log(JSON.parse(response))
+
+                        }).catch(() => console.log("Can’t access  response. Blocked by browser?"))
  
   
 }
 
+ 
+  
+    
+    
 
 
 
     onSubmit(e,id) {
        
         e.preventDefault();
-        fetch("http://localhost:3001/task/update/" +id , {
-            "method": "PUT",
+        fetch("http://localhost:3001/tag/newTag/" +id , {
+            "method": "POST",
             "headers": {
                 "x-rapidapi-host": "fairestdb.p.rapidapi.com",
                 "accept": "application/json",
                 "Content-Type": "application/json",
             },
             "body": JSON.stringify({
-                description: this.state.description,
+                tag: this.state.tag,
+                TaskId:id
                
             })
         })
             .then(response => response.text())
             .then(response => {
                 console.log(response)
-                window.location.reload();
+               window.location.reload();
 
 
 
@@ -149,17 +172,37 @@ class task extends Component {
 
 
     render() {
-        if (this.state.isChecked) {
-            console.log("hello")
-        }
+       
         const { items } = this.state;
-        
+        const { tags } = this.state;
+        var listObjet = new Array();
+
+        items.forEach(element => {
+            var listtagInter = new Array();
+            var data = {
+                id: element.id,
+                tag: element.tag,
+            }
+            tags.forEach(elem => {
+                if (element.id == elem.TaskId) {
+                    listtagInter.push(elem.tag);
+                }
+            })
+            data.tagList = listtagInter;
+            listObjet.push(data);
+        })
+
+        console.log(listObjet);
+
+
 
         return (
 
+
             <>
-               
-                {items.map(item => (
+
+                {listObjet.map(item => (
+
                 <Fragment key={item.id} >
                     <div className="container">
                    
@@ -175,22 +218,26 @@ class task extends Component {
                                 <div class="form-row align-items-center">
                                     <div class="col-sm-3 my-1">
                                         </div><input type="text" class="taskinput" placeholder="add new tag"
-                                            value={this.state.description}
-                                            onChange={(e) => this.handleChange({ description: e.target.value })}
-                                        />
-                                        
-                                        <small class="mb-1">{item.description}</small>
+                                            value={this.state.tag}
+                                            onChange={(e) => this.handleChange({ tag: e.target.value })}/>
+
                                         <button type="submit" class="addTag" onClick={(e) => this.onSubmit(e, item.id)}>Add a Tag</button>
+
                                         <input type="checkbox" class="tagcheckbox" onChange={(e) => this.done(e, item.id)}
                                           ></input>
-                                </div>
+                                    </div>
+
+                                    {item.tagList.map(tag => (
+                                        <h6 >{tag} </h6>
+                                    ))}
                             </a>
                         </div>
 
                     </div>
-                    </Fragment>))}
-
-
+                    </Fragment>)
+                )}
+               
+              
 
             </>
 
